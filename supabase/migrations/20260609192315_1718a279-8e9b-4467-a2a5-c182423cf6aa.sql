@@ -1,0 +1,16 @@
+
+-- Public read for both buckets
+CREATE POLICY "Public can read avatars" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
+CREATE POLICY "Public can read wish photos" ON storage.objects FOR SELECT USING (bucket_id = 'wish-photos');
+
+-- Authenticated users can upload avatars (to a folder named after their user id)
+CREATE POLICY "Users upload own avatar" ON storage.objects FOR INSERT TO authenticated
+  WITH CHECK (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+CREATE POLICY "Users update own avatar" ON storage.objects FOR UPDATE TO authenticated
+  USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+CREATE POLICY "Users delete own avatar" ON storage.objects FOR DELETE TO authenticated
+  USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+-- Anyone (including anon) can upload a wish photo
+CREATE POLICY "Anyone can upload wish photos" ON storage.objects FOR INSERT TO anon, authenticated
+  WITH CHECK (bucket_id = 'wish-photos');
