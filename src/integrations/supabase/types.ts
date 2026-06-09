@@ -14,13 +14,100 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      birthday_taps: {
+        Row: {
+          created_at: string
+          id: string
+          profile_id: string
+          visitor_identifier: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          profile_id: string
+          visitor_identifier: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          profile_id?: string
+          visitor_identifier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "birthday_taps_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          birthday_date: string
+          created_at: string
+          id: string
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          birthday_date: string
+          created_at?: string
+          id: string
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          birthday_date?: string
+          created_at?: string
+          id?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      wishes: {
+        Row: {
+          author_name: string
+          created_at: string
+          id: string
+          image_url: string | null
+          message: string
+          profile_id: string
+        }
+        Insert: {
+          author_name: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          message: string
+          profile_id: string
+        }
+        Update: {
+          author_name?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          message?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishes_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_birthday_today: { Args: { _profile_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
