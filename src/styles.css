@@ -198,4 +198,3 @@
 .animate-reveal { animation: wishly-reveal 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 .animate-float { animation: wishly-float 4s ease-in-out infinite; }
 .animate-pulse-glow { animation: wishly-pulse-glow 2.2s ease-out infinite; }
-}
