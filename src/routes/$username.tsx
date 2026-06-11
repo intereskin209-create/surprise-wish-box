@@ -8,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatBirthday, getVisitorId, isBirthdayToday, nextBirthdayDate } from "@/lib/birthday";
 import { Countdown } from "@/components/Countdown";
 import { Confetti } from "@/components/Confetti";
+import { useT } from "@/lib/i18n";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 type Profile = {
   id: string;
@@ -41,15 +43,7 @@ export const Route = createFileRoute("/$username")({
     </div>
   ),
   notFoundComponent: () => (
-    <div className="grid min-h-screen place-items-center bg-hero px-6 text-center">
-      <div>
-        <h1 className="text-4xl font-semibold">No one here yet</h1>
-        <p className="mt-2 text-muted-foreground">This username hasn't claimed their birthday page.</p>
-        <Button asChild className="mt-6 bg-glow text-primary-foreground shadow-glow">
-          <Link to="/auth">Claim it</Link>
-        </Button>
-      </div>
-    </div>
+    <NotFoundView />
   ),
   head: ({ params }) => ({
     meta: [
@@ -103,6 +97,7 @@ function ProfilePage() {
 }
 
 function Header() {
+  const t = useT();
   return (
     <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
       <Link to="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
@@ -111,20 +106,39 @@ function Header() {
         </span>
         Wishly
       </Link>
-      <Link to="/auth" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-        Create yours
-      </Link>
+      <div className="flex items-center gap-3">
+        <LanguageSwitcher />
+        <Link to="/auth" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+          {t("nav.createYours")}
+        </Link>
+      </div>
     </header>
   );
 }
 
+function NotFoundView() {
+  const t = useT();
+  return (
+    <div className="grid min-h-screen place-items-center bg-hero px-6 text-center">
+      <div>
+        <h1 className="text-4xl font-semibold">{t("profile.notFound.title")}</h1>
+        <p className="mt-2 text-muted-foreground">{t("profile.notFound.body")}</p>
+        <Button asChild className="mt-6 bg-glow text-primary-foreground shadow-glow">
+          <Link to="/auth">{t("profile.notFound.claim")}</Link>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function ProfileHeader({ profile, isBday }: { profile: Profile; isBday: boolean }) {
+  const t = useT();
   const [copied, setCopied] = useState(false);
   function copy() {
     const url = `${window.location.origin}/${profile.username}`;
     navigator.clipboard.writeText(url);
     setCopied(true);
-    toast.success("Link copied");
+    toast.success(t("profile.copied"));
     setTimeout(() => setCopied(false), 1500);
   }
   return (
@@ -147,7 +161,7 @@ function ProfileHeader({ profile, isBday }: { profile: Profile; isBday: boolean 
       </div>
       <h1 className="mt-5 text-3xl font-semibold tracking-tight">@{profile.username}</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Birthday {formatBirthday(profile.birthday_date)}
+        {t("profile.birthdayOn", { date: formatBirthday(profile.birthday_date) })}
       </p>
       <button
         onClick={copy}
@@ -161,9 +175,9 @@ function ProfileHeader({ profile, isBday }: { profile: Profile; isBday: boolean 
 }
 
 function LockedView({ profile, count }: { profile: Profile; count: number }) {
+  const t = useT();
   const next = nextBirthdayDate(profile.birthday_date);
-  const isToday = false; // shown only when not birthday
-  void isToday;
+  const word = count === 1 ? t("profile.wish.one") : t("profile.wish.many");
   return (
     <div className="mt-10 animate-fade-up">
       <Countdown birthdayISO={profile.birthday_date} />
@@ -173,46 +187,48 @@ function LockedView({ profile, count }: { profile: Profile; count: number }) {
           <Lock className="h-5 w-5 text-muted-foreground" />
         </div>
         <div className="mt-4 text-2xl font-semibold">
-          {count} {count === 1 ? "wish" : "wishes"} waiting to be opened
+          {t("profile.waiting", { n: count, word })}
         </div>
         <p className="mt-2 text-sm text-muted-foreground">
-          Sealed until {next.toLocaleDateString(undefined, { month: "long", day: "numeric" })}
+          {t("profile.sealedUntil", { date: next.toLocaleDateString(undefined, { month: "long", day: "numeric" }) })}
         </p>
       </div>
 
       <Button asChild size="lg" className="mt-6 w-full bg-glow text-primary-foreground shadow-glow hover:opacity-95">
         <Link to="/$username/wish" params={{ username: profile.username }}>
-          Leave a wish
+          {t("profile.leaveWish")}
         </Link>
       </Button>
 
       <p className="mt-8 text-center text-xs text-muted-foreground">
-        Share the link above — every wish stays sealed until {profile.username}'s big day.
+        {t("profile.shareNote", { name: profile.username })}
       </p>
     </div>
   );
 }
 
 function RevealView({ profile, wishes, loading }: { profile: Profile; wishes: Wish[]; loading: boolean }) {
+  const t = useT();
   const [showConfetti, setShowConfetti] = useState(true);
   useEffect(() => {
-    const t = setTimeout(() => setShowConfetti(false), 6000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setShowConfetti(false), 6000);
+    return () => clearTimeout(timer);
   }, []);
+  const word = wishes.length === 1 ? t("profile.wish.one") : t("profile.wish.many");
   return (
     <div className="mt-10">
       {showConfetti && <Confetti />}
       <div className="text-center animate-reveal">
-        <div className="text-gradient text-5xl font-semibold tracking-tight sm:text-6xl">Happy Birthday</div>
+        <div className="text-gradient text-5xl font-semibold tracking-tight sm:text-6xl">{t("reveal.title")}</div>
         <p className="mt-3 text-muted-foreground">
-          {wishes.length} {wishes.length === 1 ? "wish" : "wishes"} from people who love you.
+          {t("reveal.sub", { n: wishes.length, word })}
         </p>
       </div>
 
       <HappyBirthdayButton profile={profile} />
 
       <div className="mt-10 space-y-4">
-        {loading && <div className="text-center text-sm text-muted-foreground">Opening wishes…</div>}
+        {loading && <div className="text-center text-sm text-muted-foreground">{t("reveal.opening")}</div>}
         {wishes.map((w, i) => (
           <article
             key={w.id}
@@ -237,7 +253,7 @@ function RevealView({ profile, wishes, loading }: { profile: Profile; wishes: Wi
         ))}
         {!loading && wishes.length === 0 && (
           <div className="rounded-2xl border border-border bg-card/60 p-10 text-center text-muted-foreground">
-            No wishes yet — but the day is still young.
+            {t("reveal.empty")}
           </div>
         )}
       </div>
@@ -246,6 +262,7 @@ function RevealView({ profile, wishes, loading }: { profile: Profile; wishes: Wi
 }
 
 function HappyBirthdayButton({ profile }: { profile: Profile }) {
+  const t = useT();
   const [tapped, setTapped] = useState(false);
   const [count, setCount] = useState<number | null>(null);
   useEffect(() => {
@@ -271,7 +288,7 @@ function HappyBirthdayButton({ profile }: { profile: Profile }) {
       .from("birthday_taps")
       .insert({ profile_id: profile.id, visitor_identifier: vid });
     if (error && error.code !== "23505") {
-      toast.error("Could not save tap");
+      toast.error(t("reveal.tapFail"));
       return;
     }
     setTapped(true);
@@ -286,11 +303,11 @@ function HappyBirthdayButton({ profile }: { profile: Profile }) {
         size="lg"
         className="bg-glow text-primary-foreground shadow-glow hover:opacity-95 disabled:opacity-100"
       >
-        🎉 {tapped ? "You wished them" : "Happy Birthday"}
+        🎉 {tapped ? t("reveal.btn.wished") : t("reveal.btn.wish")}
       </Button>
       {count !== null && count > 0 && (
         <p className="mt-3 text-sm text-muted-foreground">
-          {count} {count === 1 ? "person" : "people"} wished {profile.username} a happy birthday.
+          {t("reveal.tapCount", { n: count, name: profile.username, word: count === 1 ? t("reveal.person.one") : t("reveal.person.many") })}
         </p>
       )}
     </div>

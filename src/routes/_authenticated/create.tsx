@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadAvatar } from "@/lib/storage";
+import { useT } from "@/lib/i18n";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export const Route = createFileRoute("/_authenticated/create")({
   component: CreateProfile,
@@ -14,6 +16,7 @@ export const Route = createFileRoute("/_authenticated/create")({
 });
 
 function CreateProfile() {
+  const t = useT();
   const navigate = useNavigate();
   const ctx = Route.useRouteContext() as { user: { id: string; email?: string } };
   const userId = ctx.user.id;
@@ -39,8 +42,8 @@ function CreateProfile() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
-    if (cleanUsername.length < 2) return toast.error("Pick a longer username");
-    if (!birthday) return toast.error("Choose your birthday");
+    if (cleanUsername.length < 2) return toast.error(t("create.errShort"));
+    if (!birthday) return toast.error(t("create.errBday"));
     setBusy(true);
     try {
       let avatar_url: string | null = null;
@@ -52,29 +55,30 @@ function CreateProfile() {
         avatar_url,
       });
       if (error) {
-        if (error.code === "23505") throw new Error("That username is taken");
+        if (error.code === "23505") throw new Error(t("create.errTaken"));
         throw error;
       }
       navigate({ to: "/$username", params: { username: cleanUsername } });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not create page");
+      toast.error(err instanceof Error ? err.message : t("create.errFail"));
       setBusy(false);
     }
   }
 
   return (
     <div className="min-h-screen bg-hero">
-      <header className="mx-auto flex max-w-6xl items-center px-6 py-6">
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <Link to="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
           <span className="grid h-8 w-8 place-items-center rounded-xl bg-glow text-primary-foreground shadow-glow">
             <Gift className="h-4 w-4" />
           </span>
           Wishly
         </Link>
+        <LanguageSwitcher />
       </header>
       <main className="mx-auto max-w-md px-6 pb-24 pt-12">
-        <h1 className="text-3xl font-semibold tracking-tight">Create your birthday page</h1>
-        <p className="mt-2 text-muted-foreground">This is where your friends will leave wishes.</p>
+        <h1 className="text-3xl font-semibold tracking-tight">{t("create.title")}</h1>
+        <p className="mt-2 text-muted-foreground">{t("create.sub")}</p>
 
         <form onSubmit={submit} className="mt-10 space-y-6">
           <div className="flex items-center gap-4">
@@ -97,13 +101,13 @@ function CreateProfile() {
               onChange={(e) => onFile(e.target.files?.[0] ?? null)}
             />
             <div className="text-sm text-muted-foreground">
-              <div className="font-medium text-foreground">Avatar</div>
-              <div>Optional, but recommended.</div>
+              <div className="font-medium text-foreground">{t("create.avatar")}</div>
+              <div>{t("create.avatarHint")}</div>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="username">{t("create.username")}</Label>
             <div className="flex items-center rounded-md border border-input bg-input/30 px-3 focus-within:ring-2 focus-within:ring-ring">
               <span className="text-sm text-muted-foreground">wishly.app/</span>
               <Input
@@ -118,12 +122,12 @@ function CreateProfile() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="birthday">Birthday</Label>
+            <Label htmlFor="birthday">{t("create.birthday")}</Label>
             <Input id="birthday" type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} />
           </div>
 
           <Button type="submit" size="lg" disabled={busy} className="w-full bg-glow text-primary-foreground shadow-glow hover:opacity-95">
-            {busy ? "Creating…" : "Create my birthday page"}
+            {busy ? t("create.submitting") : t("create.submit")}
           </Button>
         </form>
       </main>
