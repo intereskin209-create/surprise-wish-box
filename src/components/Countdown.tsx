@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { nextBirthdayDate } from "@/lib/birthday";
+import { useT } from "@/lib/i18n";
 
 export function Countdown({ birthdayISO }: { birthdayISO: string }) {
+  const t = useT();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
@@ -14,10 +16,10 @@ export function Countdown({ birthdayISO }: { birthdayISO: string }) {
   const mins = Math.floor((diff / 60000) % 60);
   const secs = Math.floor((diff / 1000) % 60);
   const cells = [
-    { label: "days", v: days },
-    { label: "hours", v: hours },
-    { label: "min", v: mins },
-    { label: "sec", v: secs },
+    { label: t("countdown.days"), v: days },
+    { label: t("countdown.hours"), v: hours },
+    { label: t("countdown.min"), v: mins },
+    { label: t("countdown.sec"), v: secs },
   ];
   return (
     <div className="grid grid-cols-4 gap-2 sm:gap-3">
