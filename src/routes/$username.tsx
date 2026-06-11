@@ -211,8 +211,8 @@ function RevealView({ profile, wishes, loading }: { profile: Profile; wishes: Wi
   const t = useT();
   const [showConfetti, setShowConfetti] = useState(true);
   useEffect(() => {
-    const t = setTimeout(() => setShowConfetti(false), 6000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setShowConfetti(false), 6000);
+    return () => clearTimeout(timer);
   }, []);
   const word = wishes.length === 1 ? t("profile.wish.one") : t("profile.wish.many");
   return (
