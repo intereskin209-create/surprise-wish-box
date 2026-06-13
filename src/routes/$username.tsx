@@ -265,17 +265,11 @@ function HappyBirthdayButton({ profile }: { profile: Profile }) {
   const [count, setCount] = useState<number | null>(null);
   useEffect(() => {
     supabase
-      .from("birthday_taps")
-      .select("id", { count: "exact", head: true })
-      .eq("profile_id", profile.id)
-      .then(({ count }) => setCount(count ?? 0));
+      .rpc("get_birthday_tap_count", { _profile_id: profile.id })
+      .then(({ data }) => setCount(typeof data === "number" ? data : 0));
     const vid = getVisitorId();
     supabase
-      .from("birthday_taps")
-      .select("id")
-      .eq("profile_id", profile.id)
-      .eq("visitor_identifier", vid)
-      .maybeSingle()
+      .rpc("has_visitor_tapped", { _profile_id: profile.id, _visitor: vid })
       .then(({ data }) => setTapped(!!data));
   }, [profile.id]);
 
