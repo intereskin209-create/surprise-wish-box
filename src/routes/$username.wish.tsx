@@ -22,9 +22,14 @@ export const Route = createFileRoute("/$username/wish")({
     return { profile: data };
   },
   component: WishPage,
-  errorComponent: ({ error }) => (
-    <div className="grid min-h-screen place-items-center text-muted-foreground">{error.message}</div>
-  ),
+  errorComponent: ({ error }) => {
+    console.error("[wish] load failed", error);
+    return (
+      <div className="grid min-h-screen place-items-center text-muted-foreground">
+        Could not load this page.
+      </div>
+    );
+  },
   notFoundComponent: () => <NotFoundView />,
   head: ({ params }) => ({
     meta: [{ title: `Leave a wish for ${params.username} — Wishly` }],
@@ -63,7 +68,12 @@ function WishPage() {
       if (error) throw error;
       setDone(true);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t("wish.fail"));
+      console.error("[wish] submit failed", err);
+      const msg =
+        err instanceof Error && /max 5 MB|are allowed/i.test(err.message)
+          ? err.message
+          : t("wish.fail");
+      toast.error(msg);
       setBusy(false);
     }
   }
