@@ -35,11 +35,14 @@ export const Route = createFileRoute("/$username")({
     return { profile: data as Profile };
   },
   component: ProfilePage,
-  errorComponent: ({ error }) => (
-    <div className="grid min-h-screen place-items-center text-muted-foreground">
-      Could not load this page. {error.message}
-    </div>
-  ),
+  errorComponent: ({ error }) => {
+    console.error("[profile] load failed", error);
+    return (
+      <div className="grid min-h-screen place-items-center text-muted-foreground">
+        Could not load this page.
+      </div>
+    );
+  },
   notFoundComponent: () => (
     <NotFoundView />
   ),
