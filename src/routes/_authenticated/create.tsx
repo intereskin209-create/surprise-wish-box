@@ -60,7 +60,13 @@ function CreateProfile() {
       }
       navigate({ to: "/$username", params: { username: cleanUsername } });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t("create.errFail"));
+      console.error("[create] submit failed", err);
+      const msg =
+        err instanceof Error &&
+        (err.message === t("create.errTaken") || /max 5 MB|are allowed/i.test(err.message))
+          ? err.message
+          : t("create.errFail");
+      toast.error(msg);
       setBusy(false);
     }
   }
