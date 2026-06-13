@@ -102,6 +102,12 @@ const en: Dict = {
   "create.errTaken": "That username is taken",
   "create.errFail": "Could not create page",
   "create.meta.title": "Create your birthday page — Wishly",
+
+  "example.badge": "This is a demo page",
+  "example.locked": "Locked view",
+  "example.revealed": "Birthday reveal",
+  "example.sealedNote": "Wishes stay sealed until the big day — then open all at once.",
+  "example.demoNote": "This is a preview. Create your own page to start collecting real wishes.",
 };
 
 const ru: Dict = {
@@ -202,6 +208,12 @@ const ru: Dict = {
   "create.errTaken": "Это имя уже занято",
   "create.errFail": "Не удалось создать страницу",
   "create.meta.title": "Создание страницы — Wishly",
+
+  "example.badge": "Это демо-страница",
+  "example.locked": "Запечатано",
+  "example.revealed": "День рождения",
+  "example.sealedNote": "Поздравления остаются запечатанными до большого дня — и открываются все сразу.",
+  "example.demoNote": "Это предпросмотр. Создайте свою страницу, чтобы получать настоящие поздравления.",
 };
 
 const dicts: Record<Lang, Dict> = { en, ru };
