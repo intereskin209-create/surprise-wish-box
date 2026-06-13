@@ -107,6 +107,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_birthday_tap_count: { Args: { _profile_id: string }; Returns: number }
+      get_public_profile: {
+        Args: { _username: string }
+        Returns: {
+          avatar_url: string
+          birthday_date: string
+          id: string
+          username: string
+        }[]
+      }
+      has_visitor_tapped: {
+        Args: { _profile_id: string; _visitor: string }
+        Returns: boolean
+      }
       is_birthday_today: { Args: { _profile_id: string }; Returns: boolean }
     }
     Enums: {

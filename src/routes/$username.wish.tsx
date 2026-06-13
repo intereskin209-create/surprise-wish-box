@@ -15,9 +15,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 export const Route = createFileRoute("/$username/wish")({
   loader: async ({ params }) => {
     const { data, error } = await supabase
-      .from("profiles")
-      .select("id, username, avatar_url, birthday_date")
-      .ilike("username", params.username)
+      .rpc("get_public_profile", { _username: params.username })
       .maybeSingle();
     if (error) throw error;
     if (!data) throw notFound();
