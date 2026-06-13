@@ -208,6 +208,12 @@ const ru: Dict = {
   "create.errTaken": "Это имя уже занято",
   "create.errFail": "Не удалось создать страницу",
   "create.meta.title": "Создание страницы — Wishly",
+
+  "example.badge": "Это демо-страница",
+  "example.locked": "Запечатано",
+  "example.revealed": "День рождения",
+  "example.sealedNote": "Поздравления остаются запечатанными до большого дня — и открываются все сразу.",
+  "example.demoNote": "Это предпросмотр. Создайте свою страницу, чтобы получать настоящие поздравления.",
 };
 
 const dicts: Record<Lang, Dict> = { en, ru };
