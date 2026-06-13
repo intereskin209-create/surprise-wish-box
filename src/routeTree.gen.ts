@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ExampleRouteImport } from './routes/example'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as UsernameRouteImport } from './routes/$username'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -16,6 +17,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedCreateRouteImport } from './routes/_authenticated/create'
 import { Route as UsernameWishRouteImport } from './routes/$username.wish'
 
+const ExampleRoute = ExampleRouteImport.update({
+  id: '/example',
+  path: '/example',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -50,6 +56,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$username': typeof UsernameRouteWithChildren
   '/auth': typeof AuthRoute
+  '/example': typeof ExampleRoute
   '/$username/wish': typeof UsernameWishRoute
   '/create': typeof AuthenticatedCreateRoute
 }
@@ -57,6 +64,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$username': typeof UsernameRouteWithChildren
   '/auth': typeof AuthRoute
+  '/example': typeof ExampleRoute
   '/$username/wish': typeof UsernameWishRoute
   '/create': typeof AuthenticatedCreateRoute
 }
@@ -66,20 +74,28 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/$username': typeof UsernameRouteWithChildren
   '/auth': typeof AuthRoute
+  '/example': typeof ExampleRoute
   '/$username/wish': typeof UsernameWishRoute
   '/_authenticated/create': typeof AuthenticatedCreateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$username' | '/auth' | '/$username/wish' | '/create'
+  fullPaths:
+    | '/'
+    | '/$username'
+    | '/auth'
+    | '/example'
+    | '/$username/wish'
+    | '/create'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$username' | '/auth' | '/$username/wish' | '/create'
+  to: '/' | '/$username' | '/auth' | '/example' | '/$username/wish' | '/create'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/$username'
     | '/auth'
+    | '/example'
     | '/$username/wish'
     | '/_authenticated/create'
   fileRoutesById: FileRoutesById
@@ -89,10 +105,18 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   UsernameRoute: typeof UsernameRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ExampleRoute: typeof ExampleRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/example': {
+      id: '/example'
+      path: '/example'
+      fullPath: '/example'
+      preLoaderRoute: typeof ExampleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -166,7 +190,18 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   UsernameRoute: UsernameRouteWithChildren,
   AuthRoute: AuthRoute,
+  ExampleRoute: ExampleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

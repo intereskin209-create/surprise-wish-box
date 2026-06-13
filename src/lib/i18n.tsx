@@ -102,6 +102,12 @@ const en: Dict = {
   "create.errTaken": "That username is taken",
   "create.errFail": "Could not create page",
   "create.meta.title": "Create your birthday page — Wishly",
+
+  "example.badge": "This is a demo page",
+  "example.locked": "Locked view",
+  "example.revealed": "Birthday reveal",
+  "example.sealedNote": "Wishes stay sealed until the big day — then open all at once.",
+  "example.demoNote": "This is a preview. Create your own page to start collecting real wishes.",
 };
 
 const ru: Dict = {
