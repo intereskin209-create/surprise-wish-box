@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Gift, Lock, Link2, Check, PartyPopper } from "lucide-react";
+import { Gift, Lock, Link2, Check, PartyPopper, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -192,6 +192,8 @@ function LockedView({ profile, count }: { profile: Profile; count: number }) {
         </p>
       </div>
 
+      <SealedWall count={count} />
+
       <Button asChild size="lg" className="mt-6 w-full bg-glow text-primary-foreground shadow-glow hover:opacity-95">
         <Link to="/$username/wish" params={{ username: profile.username }}>
           {t("profile.leaveWish")}
@@ -202,6 +204,56 @@ function LockedView({ profile, count }: { profile: Profile; count: number }) {
         {t("profile.shareNote", { name: profile.username })}
       </p>
     </div>
+  );
+}
+
+function SealedWall({ count }: { count: number }) {
+  const t = useT();
+  const CAP = 24;
+  const shown = Math.min(count, CAP);
+  const remaining = Math.max(0, count - CAP);
+
+  return (
+    <section className="mt-8">
+      <div className="mb-3 flex items-center justify-between px-1">
+        <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          {t("wall.title")}
+        </span>
+        {count > 0 && (
+          <span className="text-[11px] tabular-nums text-muted-foreground">{count}</span>
+        )}
+      </div>
+
+      {count === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border bg-card/40 p-8 text-center text-sm text-muted-foreground">
+          {t("wall.empty")}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+            {Array.from({ length: shown }).map((_, i) => (
+              <div
+                key={i}
+                aria-label={t("wall.cardAlt")}
+                className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-card/60 shadow-soft transition-transform duration-200 hover:scale-[1.03] animate-fade-in"
+                style={{ animationDelay: `${Math.min(i * 40, 800)}ms`, animationFillMode: "backwards" }}
+              >
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,color-mix(in_oklab,var(--primary)_18%,transparent),transparent_70%)]" />
+                <div className="absolute inset-0 grid place-items-center">
+                  <Mail className="h-5 w-5 text-muted-foreground/70 transition-colors group-hover:text-foreground/80" />
+                </div>
+                <div className="pointer-events-none absolute bottom-1.5 right-1.5 h-2 w-2 rounded-full bg-glow opacity-70 shadow-glow" />
+              </div>
+            ))}
+          </div>
+          {remaining > 0 && (
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              {t("wall.more", { n: remaining })}
+            </p>
+          )}
+        </>
+      )}
+    </section>
   );
 }
 
