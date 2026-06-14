@@ -73,6 +73,7 @@ export type Database = {
           created_at: string
           id: string
           image_url: string | null
+          image_urls: string[]
           message: string
           profile_id: string
         }
@@ -81,6 +82,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          image_urls?: string[]
           message: string
           profile_id: string
         }
@@ -89,6 +91,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          image_urls?: string[]
           message?: string
           profile_id?: string
         }
