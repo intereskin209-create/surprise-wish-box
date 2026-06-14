@@ -296,13 +296,35 @@ function RevealView({ profile, wishes, loading }: { profile: Profile; wishes: Wi
               </div>
             </div>
             <p className="mt-3 whitespace-pre-wrap text-[15px] leading-relaxed text-foreground/90">{w.message}</p>
-            {w.image_url && (
-              <img
-                src={w.image_url}
-                alt=""
-                className="mt-4 max-h-96 w-full rounded-xl border border-border object-cover"
-              />
-            )}
+            {(() => {
+              const imgs = w.image_urls && w.image_urls.length > 0
+                ? w.image_urls
+                : w.image_url
+                ? [w.image_url]
+                : [];
+              if (imgs.length === 0) return null;
+              if (imgs.length === 1) {
+                return (
+                  <img
+                    src={imgs[0]}
+                    alt=""
+                    className="mt-4 max-h-96 w-full rounded-xl border border-border object-cover"
+                  />
+                );
+              }
+              return (
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  {imgs.map((src, idx) => (
+                    <img
+                      key={idx}
+                      src={src}
+                      alt=""
+                      className="aspect-square w-full rounded-xl border border-border object-cover"
+                    />
+                  ))}
+                </div>
+              );
+            })()}
           </article>
         ))}
         {!loading && wishes.length === 0 && (
