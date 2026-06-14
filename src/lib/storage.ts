@@ -47,3 +47,16 @@ export async function uploadWishPhoto(profileId: string, file: File): Promise<st
   if (sErr || !data) throw sErr ?? new Error("Failed to sign URL");
   return data.signedUrl;
 }
+
+export const MAX_WISH_PHOTOS = 6;
+
+export async function uploadWishPhotos(profileId: string, files: File[]): Promise<string[]> {
+  if (files.length > MAX_WISH_PHOTOS) {
+    throw new Error(`You can attach up to ${MAX_WISH_PHOTOS} photos`);
+  }
+  const urls: string[] = [];
+  for (const file of files) {
+    urls.push(await uploadWishPhoto(profileId, file));
+  }
+  return urls;
+}
