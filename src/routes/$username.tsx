@@ -22,6 +22,7 @@ type Wish = {
   author_name: string;
   message: string;
   image_url: string | null;
+  image_urls: string[] | null;
   created_at: string;
 };
 
@@ -66,7 +67,7 @@ function ProfilePage() {
       if (isBday) {
         const { data, error } = await supabase
           .from("wishes")
-          .select("id, author_name, message, image_url, created_at")
+          .select("id, author_name, message, image_url, image_urls, created_at")
           .eq("profile_id", profile.id)
           .order("created_at", { ascending: true });
         if (error) throw error;
